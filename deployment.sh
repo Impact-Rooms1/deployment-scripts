@@ -195,8 +195,33 @@ check_consul() {
 }
 
 # List of repositories to clone
-repositories=("https://$GITHUB_KEY@github.com/example/repo1.git" \
-              "https://$GITHUB_KEY@github.com/example/repo2.git")
+repositories=()
+
+# Function to check if a repository URL is provided
+check_repo_url() {
+    local repo_url="$1"
+    if [ -z "$repo_url" ]; then
+        echo "Error: Repository URL is required."
+        exit 1
+    fi
+}
+
+# Parse command-line arguments
+while [[ $# -gt 0 ]]; do
+    key="$1"
+    case $key in
+        -r|--repository)
+        check_repo_url "$2"
+        repositories+=("https://$GITHUB_KEY@github.com/Impact-Rooms1/$2")
+        shift
+        shift
+        ;;
+        *)
+        echo "Unknown option: $key"
+        exit 1
+        ;;
+    esac
+done
 
 # Destination folder
 destination_folder="$HOME"
