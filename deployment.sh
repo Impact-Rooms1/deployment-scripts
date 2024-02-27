@@ -111,12 +111,99 @@ start_with_pm2() {
     fi
 }
 
+# Function to install NVM (Node Version Manager)
+install_nvm() {
+    if ! command -v nvm &> /dev/null; then
+        echo "Installing NVM (Node Version Manager)..."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+    else
+        echo "NVM is already installed."
+    fi
+}
+
+# Function to install Node.js
+install_node() {
+    if ! nvm list | grep -q "v18.14.0"; then
+        echo "Installing Node.js version 18.14.0..."
+        nvm install v18.14.0
+    else
+        echo "Node.js version 18.14.0 is already installed."
+    fi
+}
+
+# Function to install PM2
+install_pm2() {
+    if ! command -v pm2 &> /dev/null; then
+        echo "Installing PM2..."
+        npm install -g pm2
+
+        local pm2_startup_output=$(pm2 startup)
+        
+        if [ $? -eq 0 ]; then
+            eval "$pm2_startup_output"
+        fi
+    fi
+}
+
+# Function to install Python version 3.10
+install_python() {
+    if ! command -v python3.10 &> /dev/null; then
+        echo "Installing Python version 3.10..."
+        sudo apt update
+        sudo apt install -y python3.10
+    else
+        echo "Python version 3.10 is already installed."
+    fi
+}
+
+# Function to check if Python command is version 3.10 and install python3-is-python module
+check_python_version() {
+    local python_version=$(python3 --version 2>&1 | awk '{print $2}')
+    if [[ "$python_version" != "3.10"* ]]; then
+        echo "Python version is not 3.10, installing python3-is-python module..."
+        sudo apt install -y python3-is-python
+    else
+        echo "Python version is already 3.10."
+    fi
+}
+
+# Function to install Consul
+install_consul() {
+    wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+    echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+    sudo apt update && sudo apt install consul
+
+    # append some configs to the /etc/consul.d/consul.hcl
+    sudo systemctl start consul
+}
+
+# Function to check if Consul is installed and running
+check_consul() {
+    if command -v consul &> /dev/null; then
+        if consul members &> /dev/null; then
+            echo "Consul is installed and running."
+        else
+            sudo systemctl start consul
+        fi
+    else
+        install_consul
+    fi
+}
+
 # List of repositories to clone
 repositories=("https://$GITHUB_KEY@github.com/example/repo1.git" \
               "https://$GITHUB_KEY@github.com/example/repo2.git")
 
 # Destination folder
 destination_folder="$HOME"
+
+# Install necessary tools and dependencies
+check_consul
+install_nvm
+install_node
+install_pm2
+install_python
+check_python_version
 
 # Clone repositories and perform tasks based on project type
 for repo in "${repositories[@]}"; do
