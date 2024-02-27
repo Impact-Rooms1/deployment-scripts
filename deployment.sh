@@ -28,7 +28,7 @@ install_node_deps() {
     if [ -f "$folder/package.json" ]; then
         echo "Installing Node.js dependencies in $folder"
         cd "$folder" || return
-        npm install
+        npm install -f
     fi
 }
 
@@ -51,8 +51,6 @@ build_react_project() {
             echo "Building React.js project in $folder"
             cd "$folder" || return
             npm run build
-        else
-            echo "No build command found in package.json for React.js project in $folder"
         fi
     fi
 }
@@ -103,9 +101,19 @@ start_with_pm2() {
             if [ ! -z "$main_script" ]; then
                 echo "Starting application with pm2 in $folder"
                 cd "$folder" || return
+                
+                # run migrations and seeds
+                npx sequelize-cli db:migrate
+                npx sequelize-cli db:seed:undo:all
+                npx sequelize-cli db:seed
+
                 pm2 start "$main_script" --update-env --time
             else
-                echo "No main script found in package.json for pm2 in $folder"
+                if [ -f "$folder/startup.sh" ]; then
+                    cd "$folder" || return
+                    chmod +x startup.sh
+                    pm2 start ./startup.sh --update-env --time
+                fi
             fi
         fi
     fi
@@ -115,9 +123,7 @@ start_with_pm2() {
 install_nvm() {
     if ! command -v nvm &> /dev/null; then
         echo "Installing NVM (Node Version Manager)..."
-        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-    else
-        echo "NVM is already installed."
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
     fi
 }
 
@@ -126,8 +132,6 @@ install_node() {
     if ! nvm list | grep -q "v18.14.0"; then
         echo "Installing Node.js version 18.14.0..."
         nvm install v18.14.0
-    else
-        echo "Node.js version 18.14.0 is already installed."
     fi
 }
 
