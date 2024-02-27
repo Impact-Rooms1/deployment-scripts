@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# IMPACT ROOMS AUTO DEPLOYMENT SCRIPT
+
 # Check if GITHUB_KEY is set
 if [ -z "$GITHUB_KEY" ]; then
     echo "Error: GITHUB_KEY environment variable is not set. Please set it before running this script."
@@ -212,7 +214,7 @@ while [[ $# -gt 0 ]]; do
     case $key in
         -r|--repository)
         check_repo_url "$2"
-        repositories+=("https://$GITHUB_KEY@github.com/Impact-Rooms1/$2")
+        repositories+=("$2")
         shift
         shift
         ;;
@@ -235,9 +237,14 @@ install_python
 check_python_version
 
 # Clone repositories and perform tasks based on project type
-for repo in "${repositories[@]}"; do
-    clone_repo "$repo" "$destination_folder"
-    project_folder="$destination_folder/$(basename "$repo" .git)"
+for repo_info in "${repositories[@]}"; do
+    IFS=':' read -r -a repo_info_array <<< "$repo_info"
+
+    repo_url="${repo_info_array[0]}"
+    version="${repo_info_array[1]}"
+
+    clone_repo "https://$GITHUB_KEY@github.com/Impact-Rooms1/$repo_url.get" "$version" "$destination_folder"
+    project_folder="$destination_folder/$(basename "$repo_url" .git)"
     install_node_deps "$project_folder"
     install_python_deps "$project_folder"
 
