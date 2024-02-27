@@ -240,11 +240,11 @@ check_python_version
 for repo_info in "${repositories[@]}"; do
     IFS=':' read -r -a repo_info_array <<< "$repo_info"
 
-    repo_url="${repo_info_array[0]}"
+    repo="${repo_info_array[0]}"
     version="${repo_info_array[1]}"
 
-    clone_repo "https://$GITHUB_KEY@github.com/Impact-Rooms1/$repo_url.get" "$version" "$destination_folder"
-    project_folder="$destination_folder/$(basename "$repo_url" .git)"
+    clone_repo "https://$GITHUB_KEY@github.com/Impact-Rooms1/$repo.get" "$version" "$destination_folder"
+    project_folder="$destination_folder/$(basename "$repo" .git)"
     install_node_deps "$project_folder"
     install_python_deps "$project_folder"
 
