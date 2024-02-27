@@ -93,6 +93,24 @@ check_env_file() {
     done
 }
 
+# Start application with pm2 if no build command is found
+start_with_pm2() {
+    local folder="$1"
+    if [ -f "$folder/package.json" ]; then
+        local build_command=$(jq -r '.scripts.build' "$folder/package.json")
+        if [ -z "$build_command" ]; then
+            local main_script=$(jq -r '.main' "$folder/package.json")
+            if [ ! -z "$main_script" ]; then
+                echo "Starting application with pm2 in $folder"
+                cd "$folder" || return
+                pm2 start "$main_script" --update-env --time
+            else
+                echo "No main script found in package.json for pm2 in $folder"
+            fi
+        fi
+    fi
+}
+
 # List of repositories to clone
 repositories=("https://$GITHUB_KEY@github.com/example/repo1.git" \
               "https://$GITHUB_KEY@github.com/example/repo2.git")
@@ -106,8 +124,11 @@ for repo in "${repositories[@]}"; do
     project_folder="$destination_folder/$(basename "$repo" .git)"
     install_node_deps "$project_folder"
     install_python_deps "$project_folder"
-    build_react_project "$project_folder"
 
     env_values=($(collect_env_values "$project_folder"))
     check_env_file "$project_folder" "${env_values[@]}"
+
+    build_react_project "$project_folder"
+
+    start_with_pm2 "$project_folder"
 done
