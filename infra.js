@@ -38,6 +38,24 @@ async function createIfNotExists(name) {
     }
 }
 
+// Create a PostgreSQL RDS instance
+const postgresInstance = new aws.rds.Instance("my-postgres-instance", {
+    engine: "postgres",
+    engineVersion: "12.17",
+    instanceClass: "db.t4.small",
+    allocatedStorage: 20,
+    name: "company",
+    username: "masteruser",
+    password: "SuperSecretPassword123", // Change this to your desired password
+    skipFinalSnapshot: true,
+});
+
+// Export the endpoint, master username, and master password
+// pass this to our scripts
+// exports.endpoint = postgresInstance.endpoint;
+// exports.masterUsername = postgresInstance.username;
+// exports.masterPassword = postgresInstance.password;
+
 // Server
 const mainServer = await createInstance("haproxy-instance", "ami-xxxxxxxxxxxxxxxxx", "t4.medium");
 
