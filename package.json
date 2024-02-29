@@ -1,0 +1,25 @@
+{
+  "name": "deployment-scripts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "spinup": "pulumi up"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Impact-Rooms1/deployment-scripts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Impact-Rooms1/deployment-scripts/issues"
+  },
+  "homepage": "https://github.com/Impact-Rooms1/deployment-scripts#readme",
+  "dependencies": {
+    "@pulumi/aws": "^6.24.0",
+    "@pulumi/pulumi": "^3.107.0"
+  }
+}
