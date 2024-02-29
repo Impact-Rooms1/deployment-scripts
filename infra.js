@@ -1,5 +1,6 @@
 const pulumi = require("@pulumi/pulumi");
 const aws = require("@pulumi/aws");
+const fs = require('fs/promises');
 
 // Helper function to check if an Elastic IP exists
 async function eipExists(name) {
@@ -15,7 +16,7 @@ async function eipExists(name) {
 }
 
 // Helper function to create an EC2 instance with an Elastic IP
-async function createInstance(name, ami, instanceType) {
+async function createInstance(name, ami, instanceType, custom_script = '') {
     const eip = await createIfNotExists(`${name}-eip`);
     const instance = new aws.ec2.Instance(name, {
         instanceType: instanceType,
@@ -23,6 +24,7 @@ async function createInstance(name, ami, instanceType) {
         tags: {
             Name: name,
         },
+        userData: custom_script
     });
     const eipAssociation = new aws.ec2.EipAssociation(`${name}-eipAssociation`, {
         instanceId: instance.id,
@@ -57,7 +59,11 @@ const postgresInstance = new aws.rds.Instance("my-postgres-instance", {
 // exports.masterPassword = postgresInstance.password;
 
 // Server
-const mainServer = await createInstance("haproxy-instance", "ami-xxxxxxxxxxxxxxxxx", "t4.medium");
+// NOTE: this is just a setup will fix flow
+const mainServer = await createInstance(
+    "haproxy-instance", "ami-xxxxxxxxxxxxxxxxx", "t4.medium",
+    await fs.readFile('./deployment.sh')
+);
 
 // Create the HAProxy instance
 const haproxyInstance = await createInstance("haproxy-instance", "ami-xxxxxxxxxxxxxxxxx", "t4.medium");
