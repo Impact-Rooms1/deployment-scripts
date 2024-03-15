@@ -57,6 +57,8 @@ build_react_project() {
             cd "$folder" || return
             export NODE_OPTIONS=--max_old_space_size=4096
             npm run build
+        else
+            echo "Trying to start with pm2"
         fi
     fi
 }
