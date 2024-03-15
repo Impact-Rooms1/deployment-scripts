@@ -51,7 +51,7 @@ install_python_deps() {
 build_react_project() {
     local folder="$1"
     if [ -f "$folder/package.json" ]; then
-        local build_command=$(jq -r '.scripts.build' "$folder/package.json")
+        local build_command=$(jq -e -r '.scripts.build // ""' "package.json")
         if [ ! -z "$build_command" ]; then
             echo "Building React.js project in $folder"
             cd "$folder" || return
