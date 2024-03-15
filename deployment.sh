@@ -90,7 +90,7 @@ check_env_file() {
     fi
 
     for value in "${values[@]}"; do
-        if ! grep -q "^$value=" "$env_file"; then
+        if ! grep -q "^$value\s*=\s*" "$env_file"; then
             echo "$value is missing in .env file"
         fi
     done
