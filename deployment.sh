@@ -248,11 +248,12 @@ for repo_info in "${repositories[@]}"; do
 
     clone_repo "https://$GITHUB_KEY@github.com/Impact-Rooms1/$repo.git" "$version" "$destination_folder"
     project_folder="$destination_folder/$(basename "$repo" .git)"
-    install_node_deps "$project_folder"
-    install_python_deps "$project_folder"
 
     env_values=($(collect_env_values "$project_folder"))
     check_env_file "$project_folder" "${env_values[@]}"
+    
+    install_node_deps "$project_folder"
+    install_python_deps "$project_folder"
 
     build_react_project "$project_folder"
 
