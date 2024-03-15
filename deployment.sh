@@ -12,7 +12,7 @@ fi
 clone_repo() {
     local repo_url="$1"
     local repo_name="$(basename $repo_url .git)"
-    local dest_folder="$2"
+    local dest_folder="$3"
 
     if [ -d "$dest_folder/$repo_name" ]; then
         echo "Repository $repo_name already exists in $dest_folder, updating..."
