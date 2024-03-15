@@ -55,6 +55,7 @@ build_react_project() {
         if [ ! -z "$build_command" ]; then
             echo "Building React.js project in $folder"
             cd "$folder" || return
+            export NODE_OPTIONS=--max_old_space_size=4096
             npm run build
         fi
     fi
