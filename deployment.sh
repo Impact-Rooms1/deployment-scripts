@@ -103,9 +103,9 @@ check_env_file() {
 start_with_pm2() {
     local folder="$1"
     if [ -f "$folder/package.json" ]; then
-        local build_command=$(jq -r '.scripts.build' "$folder/package.json")
+        local build_command=$(jq -e -r '.scripts.build // ""' "package.json")
         if [ -z "$build_command" ]; then
-            local main_script=$(jq -r '.main' "$folder/package.json")
+            local main_script=$(jq -e -r '.main // ""' "$folder/package.json")
             if [ ! -z "$main_script" ]; then
                 echo "Starting application with pm2 in $folder"
                 cd "$folder" || return
