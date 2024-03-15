@@ -243,7 +243,7 @@ for repo_info in "${repositories[@]}"; do
     repo="${repo_info_array[0]}"
     version="${repo_info_array[1]}"
 
-    clone_repo "https://$GITHUB_KEY@github.com/Impact-Rooms1/$repo.get" "$version" "$destination_folder"
+    clone_repo "https://$GITHUB_KEY@github.com/Impact-Rooms1/$repo.git" "$version" "$destination_folder"
     project_folder="$destination_folder/$(basename "$repo" .git)"
     install_node_deps "$project_folder"
     install_python_deps "$project_folder"
