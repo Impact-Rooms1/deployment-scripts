@@ -8,8 +8,8 @@ if [ -z "$GITHUB_KEY" ]; then
     exit 1
 fi
 
-sudo apt update
-sudo apt install jq
+sudo apt update -y
+sudo apt install -y jq
 
 # Function to clone repositories
 clone_repo() {
