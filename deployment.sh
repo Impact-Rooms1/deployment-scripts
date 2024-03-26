@@ -111,9 +111,9 @@ start_with_pm2() {
                 cd "$folder" || return
                 
                 # run migrations and seeds
-                npx sequelize-cli db:migrate
-                npx sequelize-cli db:seed:undo:all
-                npx sequelize-cli db:seed
+                # npx sequelize-cli db:migrate
+                # npx sequelize-cli db:seed:undo:all
+                # npx sequelize-cli db:seed
 
                 pm2 start "$main_script" --update-env --time
             else
@@ -172,8 +172,8 @@ install_python() {
 check_python_version() {
     local python_version=$(python3 --version 2>&1 | awk '{print $2}')
     if [[ "$python_version" != "3.10"* ]]; then
-        echo "Python version is not 3.10, installing python3-is-python module..."
-        sudo apt install -y python3-is-python
+        echo "Python version is not 3.10, installing python-is-python3 module..."
+        sudo apt install -y python-is-python3
     else
         echo "Python version is already 3.10."
     fi
@@ -252,13 +252,13 @@ for repo_info in "${repositories[@]}"; do
     clone_repo "https://$GITHUB_KEY@github.com/Impact-Rooms1/$repo.git" "$version" "$destination_folder"
     project_folder="$destination_folder/$(basename "$repo" .git)"
 
-    env_values=($(collect_env_values "$project_folder"))
-    check_env_file "$project_folder" "${env_values[@]}"
+    # env_values=($(collect_env_values "$project_folder"))
+    # check_env_file "$project_folder" "${env_values[@]}"
     
     install_node_deps "$project_folder"
     install_python_deps "$project_folder"
 
-    build_react_project "$project_folder"
+    # build_react_project "$project_folder"
 
-    start_with_pm2 "$project_folder"
+    # start_with_pm2 "$project_folder"
 done
